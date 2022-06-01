@@ -14,35 +14,19 @@ public class UserDaoJDBCImpl implements UserDao {
     public UserDaoJDBCImpl() {}
 
     public void createUsersTable() {
-        try {
-            new Util().execCmd("CREATE TABLE IF NOT EXISTS users (id INT PRIMARY KEY NOT NULL AUTO_INCREMENT, name VARCHAR(50), lastName VARCHAR(50), age SMALLINT);");
-        } catch (SQLException e) {
-            LOG.log(Level.SEVERE, "Помилка роботи з БД (CREATE), дивись информацию ниже: " + e);
-        }
+        exec("CREATE TABLE IF NOT EXISTS users (id INT PRIMARY KEY NOT NULL AUTO_INCREMENT, name VARCHAR(50), lastName VARCHAR(50), age SMALLINT);");
     }
 
     public void dropUsersTable() {
-        try {
-            new Util().execCmd("DROP TABLE IF EXISTS users;");
-        } catch (SQLException e) {
-            LOG.log(Level.SEVERE, "Помилка роботи з БД (DROP), дивись информацию ниже: " + e);
-        }
+        exec("DROP TABLE IF EXISTS users;");
     }
 
     public void saveUser(String name, String lastName, byte age) {
-        try {
-            new Util().execCmd("INSERT INTO users (name, lastName, age) VALUES ('" + name + "', '" + lastName + "', '" + age + "');");
-        } catch (SQLException e) {
-            LOG.log(Level.SEVERE, "Помилка роботи з БД (SAVE), дивись информацию ниже: " + e);
-        }
+        exec("INSERT INTO users (name, lastName, age) VALUES ('" + name + "', '" + lastName + "', '" + age + "');");
     }
 
     public void removeUserById(long id) {
-        try {
-            new Util().execCmd("DELETE FROM users WHERE id='" + id + "';");
-        } catch (SQLException e) {
-            LOG.log(Level.SEVERE, "Помилка роботи з БД (REMOVE_USER), дивись информацию ниже: " + e);
-        }
+        exec("DELETE FROM users WHERE id='" + id + "';");
     }
 
     public List<User> getAllUsers() {
@@ -55,10 +39,13 @@ public class UserDaoJDBCImpl implements UserDao {
     }
 
     public void cleanUsersTable() {
+        exec("DELETE FROM users;");
+    }
+    private void exec(String cmd) {
         try {
-            new Util().execCmd("DELETE FROM users;");
+            new Util().execCmd(cmd);
         } catch (SQLException e) {
-            LOG.log(Level.SEVERE, "Помилка роботи з БД (CLEAN), дивись информацию ниже: " + e);
+            LOG.log(Level.SEVERE, "Помилка роботи з БД, дивись информацию дале: " + e);
         }
     }
 }
