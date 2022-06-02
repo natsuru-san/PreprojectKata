@@ -1,39 +1,30 @@
 package jm.task.core.jdbc.util;
 
 import jm.task.core.jdbc.model.User;
-import org.hibernate.HibernateException;
-import org.hibernate.SessionFactory;
-import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
-import org.hibernate.cfg.Configuration;
-import org.hibernate.cfg.Environment;
-import org.hibernate.service.ServiceRegistry;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Util {
+    private final String URL = "jdbc:mysql://localhost/vault?serverTimezone=Europe/Moscow&useSSL=false";
+    private final String USER_NAME = "natsuru";
+    private final String PASS_KEY = "1234";
 
-    private static SessionFactory sf = null;
-    private static final String URL = "jdbc:mysql://localhost/hibernate?serverTimezone=Europe/Moscow&useSSL=false";
-    private static final String USER_NAME = "natsuru";
-    private static final String PASS_KEY = "1234";
-    private static final String DRIVER = "com.mysql.cj.jdbc.Driver";
-    private static final String DIALECT = "org.hibernate.dialect.MySQLDialect";
-    public static SessionFactory getSf() {
-        if (sf == null) {
-            try {
-                Configuration cfg = new Configuration()
-                        .setProperty(Environment.DRIVER, DRIVER)
-                        .setProperty(Environment.URL, URL)
-                        .setProperty(Environment.USER, USER_NAME)
-                        .setProperty(Environment.PASS, PASS_KEY)
-                        .setProperty(Environment.DIALECT, DIALECT)
-                        .addAnnotatedClass(User.class);
-                ServiceRegistry service = new StandardServiceRegistryBuilder()
-                        .applySettings(cfg.getProperties())
-                        .build();
-                sf = cfg.buildSessionFactory(service);
-            } catch (HibernateException e) {
-                e.printStackTrace();
-            }
+    public void execCmd(String cmd) throws SQLException {
+        Connection connection = DriverManager.getConnection(URL, USER_NAME, PASS_KEY);
+        connection.createStatement().execute(cmd);
+        connection.close();
+    }
+    public List<User> getUsers(String cmd) throws SQLException {
+        List<User> list = new ArrayList<>();
+        Connection connection = DriverManager.getConnection(URL, USER_NAME, PASS_KEY);
+        ResultSet resultSet = connection.createStatement().executeQuery(cmd);
+        while (resultSet.next()) {
+            User user = new User(resultSet.getString("name"), resultSet.getString("lastName"), resultSet.getByte("age"));
+            user.setId(resultSet.getLong("id"));
+            list.add(user);
         }
-        return sf;
+        connection.close();
+        return list;
     }
 }
