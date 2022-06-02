@@ -13,7 +13,6 @@ public class UserServiceImpl implements UserService {
     public void dropUsersTable() {
         h.dropUsersTable();
     }
-
     public void saveUser(String name, String lastName, byte age) {
         h.saveUser(name, lastName, age);
     }
