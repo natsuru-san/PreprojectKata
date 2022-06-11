@@ -10,14 +10,14 @@ import org.hibernate.service.ServiceRegistry;
 
 public class Util {
 
-    private static SessionFactory sf = null;
+    private static SessionFactory sessionFactory = null;
     private static final String URL = "jdbc:mysql://localhost/hibernate?serverTimezone=Europe/Moscow&useSSL=false";
     private static final String USER_NAME = "natsuru";
     private static final String PASS_KEY = "1234";
     private static final String DRIVER = "com.mysql.cj.jdbc.Driver";
     private static final String DIALECT = "org.hibernate.dialect.MySQLDialect";
-    public static SessionFactory getSf() {
-        if (sf == null) {
+    public static SessionFactory getSessionFactory() {
+        if (sessionFactory == null) {
             try {
                 Configuration cfg = new Configuration()
                         .setProperty(Environment.DRIVER, DRIVER)
@@ -29,11 +29,11 @@ public class Util {
                 ServiceRegistry service = new StandardServiceRegistryBuilder()
                         .applySettings(cfg.getProperties())
                         .build();
-                sf = cfg.buildSessionFactory(service);
+                sessionFactory = cfg.buildSessionFactory(service);
             } catch (HibernateException e) {
                 e.printStackTrace();
             }
         }
-        return sf;
+        return sessionFactory;
     }
 }
