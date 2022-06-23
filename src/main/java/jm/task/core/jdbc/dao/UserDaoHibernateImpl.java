@@ -27,23 +27,29 @@ public class UserDaoHibernateImpl implements UserDao {
 
     @Override
     public void saveUser(String name, String lastName, byte age) {
-        try (Session session = sessionFactory.openSession()) {
+        Session session = sessionFactory.openSession();
+        try {
             session.beginTransaction();
             session.save(new User(name, lastName, age));
             session.getTransaction().commit();
         } catch (HibernateException e) {
-            e.printStackTrace();
+            session.getTransaction().rollback();
+        } finally {
+            session.close();
         }
     }
 
     @Override
     public void removeUserById(long id) {
-        try (Session session = sessionFactory.openSession()) {
+        Session session = sessionFactory.openSession();
+        try {
             session.beginTransaction();
             session.delete(session.get(User.class, id));
             session.getTransaction().commit();
         } catch (HibernateException e) {
-            e.printStackTrace();
+            session.getTransaction().rollback();
+        } finally {
+            session.close();
         }
     }
 
@@ -51,12 +57,15 @@ public class UserDaoHibernateImpl implements UserDao {
     @Override
     public List<User> getAllUsers() {
         List<User> users = null;
-        try (Session session = sessionFactory.openSession()) {
+        Session session = sessionFactory.openSession();
+        try {
             session.beginTransaction();
             users = session.createQuery("from User").list();
             session.getTransaction().commit();
         } catch (HibernateException e) {
-            e.printStackTrace();
+            session.getTransaction().rollback();
+        } finally {
+            session.close();
         }
         return users;
     }
@@ -67,12 +76,15 @@ public class UserDaoHibernateImpl implements UserDao {
     }
 
     private void execNative(String cmd) {
-        try (Session session = sessionFactory.openSession()) {
+        Session session = sessionFactory.openSession();
+        try {
             session.beginTransaction();
             session.createNativeQuery(cmd).executeUpdate();
             session.getTransaction().commit();
         } catch (HibernateException e) {
-            e.printStackTrace();
+            session.getTransaction().rollback();
+        } finally {
+            session.close();
         }
     }
 }
